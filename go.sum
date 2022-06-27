@@ -1,2 +1,4 @@
+github.com/novabankapp/common.data v1.0.2 h1:ucDpOTqGW8QJHbWS0bM6pVQ3SAsQB9ZygZyqWlt62Xs=
+github.com/novabankapp/common.data v1.0.2/go.mod h1:H2yQsI/PXfaHJOnjr6U74c3ltWivZ2da6PSCtp740ec=
 github.com/shopspring/decimal v1.3.1 h1:2Usl1nmF/WZucqkFZhnfFYxxxu8LG21F6nPQBE5gKV8=
 github.com/shopspring/decimal v1.3.1/go.mod h1:DKyhrW/HYNuLGql+MJL6WCR6knT2jwCFRcu2hWCYk4o=
