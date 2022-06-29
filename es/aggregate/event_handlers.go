@@ -28,21 +28,22 @@ func (c *WalletProjection) onWalletCreated(ctx context.Context, evt es.Event) er
 
 	op := models.WalletProjection{
 		WalletID: GetWalletAggregateID(evt.AggregateID),
+		UserID:   eventData.UserId,
 		ID:       uuid.New().String(),
-		Wallet: domain.Wallet{
+		Wallet: GetJsonString(domain.Wallet{
 			ID:               eventData.ID,
 			UserId:           eventData.UserId,
 			AccountId:        eventData.AccountId,
 			Balance:          eventData.Amount,
 			AvailableBalance: eventData.Amount,
 			CreatedAt:        time.Now(),
-		},
-		WalletState: domain.WalletState{
+		}),
+		WalletState: GetJsonString(domain.WalletState{
 			WalletId:      eventData.ID,
 			IsBlacklisted: false,
 			IsLocked:      false,
-		},
-		WalletTransactions: []domain.WalletTransaction{},
+		}),
+		WalletTransactions: GetJsonString([]domain.WalletTransaction{}),
 	}
 
 	_, err := c.Repo.Create(ctx, op)
@@ -75,14 +76,21 @@ func (c *WalletProjection) onWalletCredited(ctx context.Context, evt es.Event) e
 	if err != nil {
 		return err
 	}
-	e.WalletTransactions = append(e.WalletTransactions, domain.WalletTransaction{
+
+	walletTransactionsP, _ := GetEntityArrayFromJsonString[domain.WalletTransaction](e.WalletTransactions)
+	walletP, _ := GetEntityFromJsonString[domain.Wallet](e.Wallet)
+	var wallet domain.Wallet = *walletP
+	var walletTransactions []domain.WalletTransaction = *walletTransactionsP
+	walletTransactions = append(walletTransactions, domain.WalletTransaction{
 		DebitWalletId:  eventData.DebitWalletId,
-		CreditWalletId: e.Wallet.ID,
+		CreditWalletId: wallet.ID,
 		Amount:         eventData.Amount,
 		CreatedAt:      time.Now(),
 		Description:    eventData.Description,
 	})
-	e.Wallet.Balance = e.Wallet.Balance.Add(eventData.Amount)
+	wallet.Balance = wallet.Balance.Add(eventData.Amount)
+	e.Wallet = GetJsonString(wallet)
+	e.WalletTransactions = GetJsonString(e.WalletTransactions)
 	update, err := c.Repo.Update(ctx, e, e.ID)
 	if err != nil {
 		return err
@@ -117,14 +125,20 @@ func (c *WalletProjection) onWalletDebited(ctx context.Context, evt es.Event) er
 	if err != nil {
 		return err
 	}
-	e.Wallet.Balance = e.Wallet.Balance.Sub(eventData.Amount)
-	e.WalletTransactions = append(e.WalletTransactions, domain.WalletTransaction{
-		DebitWalletId:  e.Wallet.ID,
+	walletTransactionsP, _ := GetEntityArrayFromJsonString[domain.WalletTransaction](e.WalletTransactions)
+	walletP, _ := GetEntityFromJsonString[domain.Wallet](e.Wallet)
+	var wallet domain.Wallet = *walletP
+	var walletTransactions []domain.WalletTransaction = *walletTransactionsP
+	wallet.Balance = wallet.Balance.Sub(eventData.Amount)
+	walletTransactions = append(walletTransactions, domain.WalletTransaction{
+		DebitWalletId:  wallet.ID,
 		CreditWalletId: eventData.CreditWalletId,
 		Amount:         eventData.Amount,
 		CreatedAt:      time.Now(),
 		Description:    eventData.Description,
 	})
+	e.Wallet = GetJsonString(wallet)
+	e.WalletTransactions = GetJsonString(walletTransactions)
 	update, err := c.Repo.Update(ctx, e, e.ID)
 	if err != nil {
 		return err
@@ -158,7 +172,11 @@ func (c *WalletProjection) onWalletCreditReserved(ctx context.Context, evt es.Ev
 	if err != nil {
 		return err
 	}
-	e.Wallet.Balance = e.Wallet.AvailableBalance.Sub(eventData.Amount)
+
+	walletP, _ := GetEntityFromJsonString[domain.Wallet](e.Wallet)
+	var wallet domain.Wallet = *walletP
+	wallet.Balance = wallet.AvailableBalance.Sub(eventData.Amount)
+	e.Wallet = GetJsonString(wallet)
 	update, err := c.Repo.Update(ctx, e, e.ID)
 	if err != nil {
 		return err
@@ -190,7 +208,11 @@ func (c *WalletProjection) onWalletBlacklisted(ctx context.Context, evt es.Event
 	if err != nil {
 		return err
 	}
-	e.WalletState.IsBlacklisted = true
+
+	walletP, _ := GetEntityFromJsonString[domain.WalletState](e.WalletState)
+	var walletState = *walletP
+	walletState.IsBlacklisted = true
+	e.WalletState = GetJsonString(walletState)
 	update, err := c.Repo.Update(ctx, e, e.ID)
 	if err != nil {
 		return err
@@ -223,7 +245,10 @@ func (c *WalletProjection) onWalletUnBlacklisted(ctx context.Context, evt es.Eve
 	if err != nil {
 		return err
 	}
-	e.WalletState.IsBlacklisted = false
+	walletP, _ := GetEntityFromJsonString[domain.WalletState](e.WalletState)
+	var walletState = *walletP
+	walletState.IsBlacklisted = false
+	e.WalletState = GetJsonString(walletState)
 	update, err := c.Repo.Update(ctx, e, e.ID)
 	if err != nil {
 		return err
@@ -257,7 +282,10 @@ func (c *WalletProjection) onWalletLocked(ctx context.Context, evt es.Event) err
 	if err != nil {
 		return err
 	}
-	e.WalletState.IsLocked = true
+	walletP, _ := GetEntityFromJsonString[domain.WalletState](e.WalletState)
+	var walletState = *walletP
+	walletState.IsLocked = true
+	e.WalletState = GetJsonString(walletState)
 	update, err := c.Repo.Update(ctx, e, e.ID)
 	if err != nil {
 		return err
@@ -290,7 +318,10 @@ func (c *WalletProjection) onWalletUnlocked(ctx context.Context, evt es.Event) e
 	if err != nil {
 		return err
 	}
-	e.WalletState.IsLocked = false
+	walletP, _ := GetEntityFromJsonString[domain.WalletState](e.WalletState)
+	var walletState = *walletP
+	walletState.IsLocked = false
+	e.WalletState = GetJsonString(walletState)
 	update, err := c.Repo.Update(ctx, e, e.ID)
 	if err != nil {
 		return err
@@ -324,7 +355,11 @@ func (c *WalletProjection) onWalletCreditReleased(ctx context.Context, evt es.Ev
 	if err != nil {
 		return err
 	}
-	e.Wallet.Balance = e.Wallet.AvailableBalance.Add(eventData.Amount)
+	walletP, _ := GetEntityFromJsonString[domain.Wallet](e.WalletState)
+	var wallet domain.Wallet = *walletP
+	wallet.Balance = wallet.AvailableBalance.Add(eventData.Amount)
+	e.Wallet = GetJsonString(wallet)
+
 	update, err := c.Repo.Update(ctx, e, e.ID)
 	if err != nil {
 		return err

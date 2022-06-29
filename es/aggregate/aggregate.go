@@ -2,8 +2,8 @@ package aggregate
 
 import (
 	es "github.com/novabankapp/common.data/eventstore"
-	event1 "github.com/novabankapp/common.data/eventstore/events/v1"
 	"github.com/novabankapp/wallet.data/domain"
+	event1 "github.com/novabankapp/wallet.data/es/events/v1"
 	v1 "github.com/novabankapp/wallet.data/es/events/v1"
 	"github.com/pkg/errors"
 	"time"

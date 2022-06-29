@@ -2,13 +2,14 @@ package aggregate
 
 import (
 	"context"
-	"github.com/opentracing/opentracing-go"
-	"strings"
-
+	"encoding/json"
 	"github.com/EventStore/EventStore-Client-Go/esdb"
+	base "github.com/novabankapp/common.data/domain/base"
 	"github.com/novabankapp/common.data/eventstore"
+	"github.com/opentracing/opentracing-go"
 	"github.com/opentracing/opentracing-go/log"
 	"github.com/pkg/errors"
+	"strings"
 )
 
 // GetWalletAggregateID get order aggregate id for eventstoredb
@@ -18,6 +19,30 @@ func GetWalletAggregateID(eventAggregateID string) string {
 
 func IsAggregateNotFound(aggregate eventstore.Aggregate) bool {
 	return aggregate.GetVersion() == 0
+}
+
+func GetJsonString(entity interface{}) (result string) {
+	res, err := json.Marshal(entity)
+	if err != nil {
+		return ""
+	}
+	return string(res)
+}
+func GetEntityArrayFromJsonString[Entity base.NoSQLEntity](obj string) (result *[]Entity, error error) {
+	var p []Entity
+	err := json.Unmarshal([]byte(obj), &p)
+	if err != nil {
+		return nil, err
+	}
+	return &p, nil
+}
+func GetEntityFromJsonString[Entity base.NoSQLEntity](obj string) (result *Entity, error error) {
+	var p Entity
+	err := json.Unmarshal([]byte(obj), &p)
+	if err != nil {
+		return nil, err
+	}
+	return &p, nil
 }
 
 func LoadWalletAggregate(ctx context.Context, eventStore eventstore.AggregateStore, aggregateID string) (*WalletAggregate, error) {

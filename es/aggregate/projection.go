@@ -5,7 +5,7 @@ import (
 	"github.com/EventStore/EventStore-Client-Go/esdb"
 	es "github.com/novabankapp/common.data/eventstore"
 	"github.com/novabankapp/common.data/eventstore/projections"
-	"github.com/novabankapp/common.data/repositories/base/cassandra"
+	"github.com/novabankapp/common.data/repositories/base"
 	"github.com/novabankapp/common.data/tracing"
 	v1 "github.com/novabankapp/wallet.data/es/events/v1"
 	"github.com/novabankapp/wallet.data/es/models"
@@ -19,7 +19,7 @@ const (
 
 type WalletProjection struct {
 	projections.CassandraProjection
-	Repo cassandra.CassandraRepository[models.WalletProjection]
+	Repo base.NoSqlRepository[models.WalletProjection]
 }
 
 func (c *WalletProjection) ProcessEvents(ctx context.Context, stream *esdb.PersistentSubscription, workerID int) error {
