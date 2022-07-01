@@ -7,6 +7,7 @@ import (
 type WalletState struct {
 	IsLocked      bool   `json:"is_locked"`
 	IsBlacklisted bool   `json:"is_blacklisted"`
+	IsDeleted     bool   `json:"is_deleted"`
 	WalletId      string `json:"wallet_id"`
 	ID            string `json:"id"`
 }

@@ -12,6 +12,7 @@ const (
 	WalletLocked         = "V1_WALLET_LOCKED"
 	WalletBlacklisted    = "V1_WALLET_BLACKLISTED"
 	WalletUnlocked       = "V1_WALLET_UNLOCKED"
+	WalletDeleted        = "V1_WALLET_DELETED"
 	WalletUnBlacklisted  = "V1_WALLET_UNBLACKLISTED"
 	WalletCreditReserved = "V1_WALLET_CREDIT_RESERVED"
 	WalletCreditReleased = "V1_WALLET_CREDIT_RELEASED"
@@ -44,6 +45,9 @@ type WalletCreditReleasedEvent struct {
 }
 
 type WalletLockedEvent struct {
+	Description string
+}
+type WalletDeletedEvent struct {
 	Description string
 }
 type WalletUnlockedEvent struct {
@@ -160,6 +164,16 @@ func NewWalletUnBlacklistedEvent(aggregate es.Aggregate, description string) (es
 		Description: description,
 	}
 	event := es.NewBaseEvent(aggregate, WalletUnBlacklisted)
+	if err := event.SetJsonData(&eventData); err != nil {
+		return es.Event{}, err
+	}
+	return event, nil
+}
+func NewWalletDeletedEvent(aggregate es.Aggregate, description string) (es.Event, error) {
+	eventData := WalletDeletedEvent{
+		Description: description,
+	}
+	event := es.NewBaseEvent(aggregate, WalletDeleted)
 	if err := event.SetJsonData(&eventData); err != nil {
 		return es.Event{}, err
 	}

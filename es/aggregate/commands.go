@@ -185,3 +185,21 @@ func (a *WalletAggregate) UnBlacklistWallet(ctx context.Context, description str
 
 	return a.Apply(event)
 }
+func (a *WalletAggregate) DeleteWallet(ctx context.Context, description string) error {
+	span, _ := opentracing.StartSpanFromContext(ctx, "WalletAggregate.DeleteWallet")
+	defer span.Finish()
+	span.LogFields(log.String("AggregateID", a.GetID()))
+
+	event, err := eventsV1.NewWalletDeletedEvent(a, description)
+	if err != nil {
+		tracing.TraceErr(span, err)
+		return errors.Wrap(err, "NewWalletDeletedEvent")
+	}
+
+	if err := event.SetMetadata(tracing.ExtractTextMapCarrier(span.Context())); err != nil {
+		tracing.TraceErr(span, err)
+		return errors.Wrap(err, "SetMetadata")
+	}
+
+	return a.Apply(event)
+}

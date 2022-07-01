@@ -260,7 +260,41 @@ func (c *WalletProjection) onWalletUnBlacklisted(ctx context.Context, evt es.Eve
 	}
 
 }
+func (c *WalletProjection) onWalletDeleted(ctx context.Context, evt es.Event) error {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "cassandraProjection.onWalletDeleted")
+	defer span.Finish()
+	span.LogFields(log.String("AggregateID", evt.GetAggregateID()))
 
+	var eventData v1.WalletDeletedEvent
+	if err := evt.GetJsonData(&eventData); err != nil {
+		tracing.TraceErr(span, err)
+		return errors.Wrap(err, "evt.GetJsonData")
+	}
+	queries := make([]map[string]string, 1)
+	m := make(map[string]string)
+	m["column"] = "WalletID"
+	m["compare"] = "="
+	m["value"] = evt.GetAggregateID()
+	queries = append(queries, m)
+	ent, err := c.Repo.GetByCondition(ctx, queries)
+	e := *ent
+	if err != nil {
+		return err
+	}
+	walletP, _ := GetEntityFromJsonString[domain.WalletState](e.WalletState)
+	var walletState = *walletP
+	walletState.IsDeleted = true
+	e.WalletState = GetJsonString(walletState)
+	update, err := c.Repo.Update(ctx, e, e.ID)
+	if err != nil {
+		return err
+	}
+	if update {
+		return nil
+	} else {
+		return errors.New("Not found")
+	}
+}
 func (c *WalletProjection) onWalletLocked(ctx context.Context, evt es.Event) error {
 	span, ctx := opentracing.StartSpanFromContext(ctx, "cassandraProjection.onWalletLocked")
 	defer span.Finish()
