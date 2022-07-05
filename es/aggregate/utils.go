@@ -12,7 +12,7 @@ import (
 	"strings"
 )
 
-// GetWalletAggregateID get order aggregate id for eventstoredb
+// GetWalletAggregateID get  aggregate id for eventstoredb
 func GetWalletAggregateID(eventAggregateID string) string {
 	return strings.ReplaceAll(eventAggregateID, "wallet-", "")
 }

@@ -3,6 +3,7 @@ package aggregate
 import (
 	"context"
 	"github.com/novabankapp/common.infrastructure/tracing"
+	"github.com/novabankapp/wallet.data/constants"
 	eventsV1 "github.com/novabankapp/wallet.data/es/events/v1"
 	"github.com/opentracing/opentracing-go"
 	"github.com/opentracing/opentracing-go/log"
@@ -13,7 +14,7 @@ import (
 func (a *WalletAggregate) CreateWallet(ctx context.Context, amount decimal.Decimal, description, userId, accountId, id string) error {
 	span, _ := opentracing.StartSpanFromContext(ctx, "WalletAggregate.CreateWallet")
 	defer span.Finish()
-	span.LogFields(log.String("AggregateID", a.GetID()))
+	span.LogFields(log.String(constants.AggregateID, a.GetID()))
 
 	event, err := eventsV1.NewWalletCreatedEvent(a, amount, description, userId, accountId, id)
 	if err != nil {
@@ -35,7 +36,7 @@ func (a *WalletAggregate) CreditWallet(ctx context.Context,
 	description string) error {
 	span, _ := opentracing.StartSpanFromContext(ctx, "WalletAggregate.CreditWallet")
 	defer span.Finish()
-	span.LogFields(log.String("AggregateID", a.GetID()))
+	span.LogFields(log.String(constants.AggregateID, a.GetID()))
 
 	event, err := eventsV1.NewWalletCreditEvent(a, debitWalletId, amount, description)
 	if err != nil {
@@ -56,7 +57,7 @@ func (a *WalletAggregate) DebitWallet(ctx context.Context,
 	description string) error {
 	span, _ := opentracing.StartSpanFromContext(ctx, "WalletAggregate.DebitWallet")
 	defer span.Finish()
-	span.LogFields(log.String("AggregateID", a.GetID()))
+	span.LogFields(log.String(constants.AggregateID, a.GetID()))
 
 	event, err := eventsV1.NewWalletDebitEvent(a, creditWalletId, amount, description)
 	if err != nil {
@@ -77,7 +78,7 @@ func (a *WalletAggregate) ReserveWalletCredit(
 	description string) error {
 	span, _ := opentracing.StartSpanFromContext(ctx, "WalletAggregate.ReserveWalletCredit")
 	defer span.Finish()
-	span.LogFields(log.String("AggregateID", a.GetID()))
+	span.LogFields(log.String(constants.AggregateID, a.GetID()))
 
 	event, err := eventsV1.NewWalletCreditReservedEvent(a, amount, description)
 	if err != nil {
@@ -98,7 +99,7 @@ func (a *WalletAggregate) ReleaseWalletCredit(
 	description string) error {
 	span, _ := opentracing.StartSpanFromContext(ctx, "WalletAggregate.ReleaseWalletCredit")
 	defer span.Finish()
-	span.LogFields(log.String("AggregateID", a.GetID()))
+	span.LogFields(log.String(constants.AggregateID, a.GetID()))
 
 	event, err := eventsV1.NewWalletCreditReleasedEvent(a, amount, description)
 	if err != nil {
@@ -116,7 +117,7 @@ func (a *WalletAggregate) ReleaseWalletCredit(
 func (a *WalletAggregate) LockWallet(ctx context.Context, description string) error {
 	span, _ := opentracing.StartSpanFromContext(ctx, "WalletAggregate.LockWallet")
 	defer span.Finish()
-	span.LogFields(log.String("AggregateID", a.GetID()))
+	span.LogFields(log.String(constants.AggregateID, a.GetID()))
 
 	event, err := eventsV1.NewWalletLockedEvent(a, description)
 	if err != nil {
@@ -134,7 +135,7 @@ func (a *WalletAggregate) LockWallet(ctx context.Context, description string) er
 func (a *WalletAggregate) UnlockWallet(ctx context.Context, description string) error {
 	span, _ := opentracing.StartSpanFromContext(ctx, "WalletAggregate.UnlockWallet")
 	defer span.Finish()
-	span.LogFields(log.String("AggregateID", a.GetID()))
+	span.LogFields(log.String(constants.AggregateID, a.GetID()))
 
 	event, err := eventsV1.NewWalletUnlockedEvent(a, description)
 	if err != nil {
@@ -152,7 +153,7 @@ func (a *WalletAggregate) UnlockWallet(ctx context.Context, description string) 
 func (a *WalletAggregate) BlacklistWallet(ctx context.Context, description string) error {
 	span, _ := opentracing.StartSpanFromContext(ctx, "WalletAggregate.BlacklistWallet")
 	defer span.Finish()
-	span.LogFields(log.String("AggregateID", a.GetID()))
+	span.LogFields(log.String(constants.AggregateID, a.GetID()))
 
 	event, err := eventsV1.NewWalletBlacklistedEvent(a, description)
 	if err != nil {
@@ -170,7 +171,7 @@ func (a *WalletAggregate) BlacklistWallet(ctx context.Context, description strin
 func (a *WalletAggregate) UnBlacklistWallet(ctx context.Context, description string) error {
 	span, _ := opentracing.StartSpanFromContext(ctx, "WalletAggregate.UnBlacklistWallet")
 	defer span.Finish()
-	span.LogFields(log.String("AggregateID", a.GetID()))
+	span.LogFields(log.String(constants.AggregateID, a.GetID()))
 
 	event, err := eventsV1.NewWalletUnBlacklistedEvent(a, description)
 	if err != nil {
@@ -188,7 +189,7 @@ func (a *WalletAggregate) UnBlacklistWallet(ctx context.Context, description str
 func (a *WalletAggregate) DeleteWallet(ctx context.Context, description string) error {
 	span, _ := opentracing.StartSpanFromContext(ctx, "WalletAggregate.DeleteWallet")
 	defer span.Finish()
-	span.LogFields(log.String("AggregateID", a.GetID()))
+	span.LogFields(log.String(constants.AggregateID, a.GetID()))
 
 	event, err := eventsV1.NewWalletDeletedEvent(a, description)
 	if err != nil {

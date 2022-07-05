@@ -5,6 +5,7 @@ import (
 	"github.com/google/uuid"
 	es "github.com/novabankapp/common.data/eventstore"
 	"github.com/novabankapp/common.data/tracing"
+	"github.com/novabankapp/wallet.data/constants"
 	"github.com/novabankapp/wallet.data/domain"
 	v1 "github.com/novabankapp/wallet.data/es/events/v1"
 	"github.com/novabankapp/wallet.data/es/models"
@@ -17,14 +18,14 @@ import (
 func (c *WalletProjection) onWalletCreated(ctx context.Context, evt es.Event) error {
 	span, ctx := opentracing.StartSpanFromContext(ctx, "cassandraProjection.onWalletCreated")
 	defer span.Finish()
-	span.LogFields(log.String("AggregateID", evt.GetAggregateID()))
+	span.LogFields(log.String(constants.AggregateID, evt.GetAggregateID()))
 
 	var eventData v1.WalletCreatedEvent
 	if err := evt.GetJsonData(&eventData); err != nil {
 		tracing.TraceErr(span, err)
 		return errors.Wrap(err, "evt.GetJsonData")
 	}
-	span.LogFields(log.String("WalletID", eventData.ID))
+	span.LogFields(log.String(constants.WalletID, eventData.ID))
 
 	op := models.WalletProjection{
 		WalletID: GetWalletAggregateID(evt.AggregateID),
@@ -57,7 +58,7 @@ func (c *WalletProjection) onWalletCreated(ctx context.Context, evt es.Event) er
 func (c *WalletProjection) onWalletCredited(ctx context.Context, evt es.Event) error {
 	span, ctx := opentracing.StartSpanFromContext(ctx, "cassandraProjection.onWalletCredited")
 	defer span.Finish()
-	span.LogFields(log.String("AggregateID", evt.GetAggregateID()))
+	span.LogFields(log.String(constants.AggregateID, evt.GetAggregateID()))
 
 	var eventData v1.WalletCreditedEvent
 	if err := evt.GetJsonData(&eventData); err != nil {
@@ -67,7 +68,7 @@ func (c *WalletProjection) onWalletCredited(ctx context.Context, evt es.Event) e
 	//span.LogFields(log.String("WalletID", eventData.ID))
 	queries := make([]map[string]string, 1)
 	m := make(map[string]string)
-	m["column"] = "WalletID"
+	m["column"] = constants.WalletID
 	m["compare"] = "="
 	m["value"] = evt.GetAggregateID()
 	queries = append(queries, m)
@@ -106,7 +107,7 @@ func (c *WalletProjection) onWalletCredited(ctx context.Context, evt es.Event) e
 func (c *WalletProjection) onWalletDebited(ctx context.Context, evt es.Event) error {
 	span, ctx := opentracing.StartSpanFromContext(ctx, "cassandraProjection.onWalletDebited")
 	defer span.Finish()
-	span.LogFields(log.String("AggregateID", evt.GetAggregateID()))
+	span.LogFields(log.String(constants.AggregateID, evt.GetAggregateID()))
 
 	var eventData v1.WalletDebitedEvent
 	if err := evt.GetJsonData(&eventData); err != nil {
@@ -116,7 +117,7 @@ func (c *WalletProjection) onWalletDebited(ctx context.Context, evt es.Event) er
 	//span.LogFields(log.String("WalletID", eventData.ID))
 	queries := make([]map[string]string, 1)
 	m := make(map[string]string)
-	m["column"] = "WalletID"
+	m["column"] = constants.WalletID
 	m["compare"] = "="
 	m["value"] = evt.GetAggregateID()
 	queries = append(queries, m)
@@ -153,7 +154,7 @@ func (c *WalletProjection) onWalletDebited(ctx context.Context, evt es.Event) er
 func (c *WalletProjection) onWalletCreditReserved(ctx context.Context, evt es.Event) error {
 	span, ctx := opentracing.StartSpanFromContext(ctx, "cassandraProjection.onWalletCreditReserved")
 	defer span.Finish()
-	span.LogFields(log.String("AggregateID", evt.GetAggregateID()))
+	span.LogFields(log.String(constants.AggregateID, evt.GetAggregateID()))
 
 	var eventData v1.WalletCreditedEvent
 	if err := evt.GetJsonData(&eventData); err != nil {
@@ -163,7 +164,7 @@ func (c *WalletProjection) onWalletCreditReserved(ctx context.Context, evt es.Ev
 	//span.LogFields(log.String("WalletID", eventData.ID))
 	queries := make([]map[string]string, 1)
 	m := make(map[string]string)
-	m["column"] = "WalletID"
+	m["column"] = constants.WalletID
 	m["compare"] = "="
 	m["value"] = evt.GetAggregateID()
 	queries = append(queries, m)
@@ -190,7 +191,7 @@ func (c *WalletProjection) onWalletCreditReserved(ctx context.Context, evt es.Ev
 func (c *WalletProjection) onWalletBlacklisted(ctx context.Context, evt es.Event) error {
 	span, ctx := opentracing.StartSpanFromContext(ctx, "cassandraProjection.onWalletBlacklisted")
 	defer span.Finish()
-	span.LogFields(log.String("AggregateID", evt.GetAggregateID()))
+	span.LogFields(log.String(constants.AggregateID, evt.GetAggregateID()))
 
 	var eventData v1.WalletBlacklistedEvent
 	if err := evt.GetJsonData(&eventData); err != nil {
@@ -199,7 +200,7 @@ func (c *WalletProjection) onWalletBlacklisted(ctx context.Context, evt es.Event
 	}
 	queries := make([]map[string]string, 1)
 	m := make(map[string]string)
-	m["column"] = "WalletID"
+	m["column"] = constants.WalletID
 	m["compare"] = "="
 	m["value"] = evt.GetAggregateID()
 	queries = append(queries, m)
@@ -227,7 +228,7 @@ func (c *WalletProjection) onWalletBlacklisted(ctx context.Context, evt es.Event
 func (c *WalletProjection) onWalletUnBlacklisted(ctx context.Context, evt es.Event) error {
 	span, ctx := opentracing.StartSpanFromContext(ctx, "cassandraProjection.onWalletUnBlacklisted")
 	defer span.Finish()
-	span.LogFields(log.String("AggregateID", evt.GetAggregateID()))
+	span.LogFields(log.String(constants.AggregateID, evt.GetAggregateID()))
 
 	var eventData v1.WalletUnBlacklistedEvent
 	if err := evt.GetJsonData(&eventData); err != nil {
@@ -236,7 +237,7 @@ func (c *WalletProjection) onWalletUnBlacklisted(ctx context.Context, evt es.Eve
 	}
 	queries := make([]map[string]string, 1)
 	m := make(map[string]string)
-	m["column"] = "WalletID"
+	m["column"] = constants.WalletID
 	m["compare"] = "="
 	m["value"] = evt.GetAggregateID()
 	queries = append(queries, m)
@@ -263,7 +264,7 @@ func (c *WalletProjection) onWalletUnBlacklisted(ctx context.Context, evt es.Eve
 func (c *WalletProjection) onWalletDeleted(ctx context.Context, evt es.Event) error {
 	span, ctx := opentracing.StartSpanFromContext(ctx, "cassandraProjection.onWalletDeleted")
 	defer span.Finish()
-	span.LogFields(log.String("AggregateID", evt.GetAggregateID()))
+	span.LogFields(log.String(constants.AggregateID, evt.GetAggregateID()))
 
 	var eventData v1.WalletDeletedEvent
 	if err := evt.GetJsonData(&eventData); err != nil {
@@ -272,7 +273,7 @@ func (c *WalletProjection) onWalletDeleted(ctx context.Context, evt es.Event) er
 	}
 	queries := make([]map[string]string, 1)
 	m := make(map[string]string)
-	m["column"] = "WalletID"
+	m["column"] = constants.WalletID
 	m["compare"] = "="
 	m["value"] = evt.GetAggregateID()
 	queries = append(queries, m)
@@ -298,7 +299,7 @@ func (c *WalletProjection) onWalletDeleted(ctx context.Context, evt es.Event) er
 func (c *WalletProjection) onWalletLocked(ctx context.Context, evt es.Event) error {
 	span, ctx := opentracing.StartSpanFromContext(ctx, "cassandraProjection.onWalletLocked")
 	defer span.Finish()
-	span.LogFields(log.String("AggregateID", evt.GetAggregateID()))
+	span.LogFields(log.String(constants.AggregateID, evt.GetAggregateID()))
 
 	var eventData v1.WalletLockedEvent
 	if err := evt.GetJsonData(&eventData); err != nil {
@@ -307,7 +308,7 @@ func (c *WalletProjection) onWalletLocked(ctx context.Context, evt es.Event) err
 	}
 	queries := make([]map[string]string, 1)
 	m := make(map[string]string)
-	m["column"] = "WalletID"
+	m["column"] = constants.WalletID
 	m["compare"] = "="
 	m["value"] = evt.GetAggregateID()
 	queries = append(queries, m)
@@ -334,7 +335,7 @@ func (c *WalletProjection) onWalletLocked(ctx context.Context, evt es.Event) err
 func (c *WalletProjection) onWalletUnlocked(ctx context.Context, evt es.Event) error {
 	span, ctx := opentracing.StartSpanFromContext(ctx, "cassandraProjection.onWalletUnlocked")
 	defer span.Finish()
-	span.LogFields(log.String("AggregateID", evt.GetAggregateID()))
+	span.LogFields(log.String(constants.AggregateID, evt.GetAggregateID()))
 
 	var eventData v1.WalletUnlockedEvent
 	if err := evt.GetJsonData(&eventData); err != nil {
@@ -343,7 +344,7 @@ func (c *WalletProjection) onWalletUnlocked(ctx context.Context, evt es.Event) e
 	}
 	queries := make([]map[string]string, 1)
 	m := make(map[string]string)
-	m["column"] = "WalletID"
+	m["column"] = constants.WalletID
 	m["compare"] = "="
 	m["value"] = evt.GetAggregateID()
 	queries = append(queries, m)
@@ -370,7 +371,7 @@ func (c *WalletProjection) onWalletUnlocked(ctx context.Context, evt es.Event) e
 func (c *WalletProjection) onWalletCreditReleased(ctx context.Context, evt es.Event) error {
 	span, ctx := opentracing.StartSpanFromContext(ctx, "cassandraProjection.onWalletCreditReleased")
 	defer span.Finish()
-	span.LogFields(log.String("AggregateID", evt.GetAggregateID()))
+	span.LogFields(log.String(constants.AggregateID, evt.GetAggregateID()))
 
 	var eventData v1.WalletCreditedEvent
 	if err := evt.GetJsonData(&eventData); err != nil {
@@ -380,7 +381,7 @@ func (c *WalletProjection) onWalletCreditReleased(ctx context.Context, evt es.Ev
 	//span.LogFields(log.String("WalletID", eventData.ID))
 	queries := make([]map[string]string, 1)
 	m := make(map[string]string)
-	m["column"] = "WalletID"
+	m["column"] = constants.WalletID
 	m["compare"] = "="
 	m["value"] = evt.GetAggregateID()
 	queries = append(queries, m)
