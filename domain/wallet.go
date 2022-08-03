@@ -2,6 +2,7 @@ package domain
 
 import (
 	"github.com/shopspring/decimal"
+	"sync"
 	"time"
 )
 
@@ -12,6 +13,7 @@ type Wallet struct {
 	Balance          decimal.Decimal `json:"balance"`
 	AvailableBalance decimal.Decimal `json:"available_balance"`
 	CreatedAt        time.Time
+	Lock             sync.RWMutex
 }
 
 func (w Wallet) IsNoSQLEntity() bool {

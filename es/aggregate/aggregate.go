@@ -104,7 +104,8 @@ func (a *WalletAggregate) onWalletCredited(evt es.Event) error {
 	if err := evt.GetJsonData(&eventData); err != nil {
 		return errors.Wrap(err, "GetJsonData")
 	}
-
+	a.Wallet.Lock.Lock()
+	defer a.Wallet.Lock.Unlock()
 	a.Wallet.Balance = a.Wallet.Balance.Add(eventData.Amount)
 	*a.WalletTransactions = append(*a.WalletTransactions, domain.WalletTransaction{
 		DebitWalletId:  eventData.DebitWalletId,
@@ -121,6 +122,10 @@ func (a *WalletAggregate) onWalletDebited(evt es.Event) error {
 	if err := evt.GetJsonData(&eventData); err != nil {
 		return errors.Wrap(err, "GetJsonData")
 	}
+
+	a.Wallet.Lock.Lock()
+	defer a.Wallet.Lock.Unlock()
+
 	a.Wallet.Balance = a.Wallet.Balance.Sub(eventData.Amount)
 	*a.WalletTransactions = append(*a.WalletTransactions, domain.WalletTransaction{
 		Amount:         eventData.Amount,
