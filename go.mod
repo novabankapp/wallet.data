@@ -49,5 +49,4 @@ require (
 )
 
 replace github.com/novabankapp/common.infrastructure v1.3.0 => C:\Projects\golang\github.com\novabankapp\common.infrastructure
-
 replace github.com/novabankapp/common.data v1.0.2 => C:\Projects\golang\github.com\novabankapp\common.data
