@@ -1,14 +1,15 @@
 package domain
 
 import (
+	"github.com/gocql/gocql"
 	"net/mail"
 	"time"
 )
 
 type WalletLink struct {
-	WalletId string `json:"wallet_id"`
-	ID       string `json:"id"`
-	Value    string `json:"value"`
+	WalletId string     `json:"wallet_id"`
+	ID       gocql.UUID `json:"id"`
+	Value    string     `json:"value"`
 	LinkDate time.Time
 }
 

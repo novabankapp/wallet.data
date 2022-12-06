@@ -1,6 +1,7 @@
 package domain
 
 import (
+	"github.com/gocql/gocql"
 	"github.com/shopspring/decimal"
 	"time"
 )
@@ -11,4 +12,5 @@ type WalletTransaction struct {
 	Amount         decimal.Decimal `json:"amount"`
 	CreatedAt      time.Time       `json:"created_at"`
 	Description    string          `json:"description"`
+	ID             gocql.UUID      `json:"id"`
 }
