@@ -28,7 +28,7 @@ func GetJsonString(entity interface{}) (result string) {
 	}
 	return string(res)
 }
-func GetEntityArrayFromJsonString[Entity base.NoSQLEntity](obj string) (result *[]Entity, error error) {
+func GetEntityArrayFromJsonString[Entity base.NoSqlEntity](obj string) (result *[]Entity, error error) {
 	var p []Entity
 	err := json.Unmarshal([]byte(obj), &p)
 	if err != nil {
@@ -36,7 +36,7 @@ func GetEntityArrayFromJsonString[Entity base.NoSQLEntity](obj string) (result *
 	}
 	return &p, nil
 }
-func GetEntityFromJsonString[Entity base.NoSQLEntity](obj string) (result *Entity, error error) {
+func GetEntityFromJsonString[Entity base.NoSqlEntity](obj string) (result *Entity, error error) {
 	var p Entity
 	err := json.Unmarshal([]byte(obj), &p)
 	if err != nil {

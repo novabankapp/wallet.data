@@ -1,14 +1,13 @@
 package domain
 
 import (
-	"github.com/gocql/gocql"
 	"github.com/shopspring/decimal"
 	"sync"
 	"time"
 )
 
 type Wallet struct {
-	ID               gocql.UUID      `json:"id"`
+	ID               string          `json:"id"`
 	UserId           string          `json:"user_id"`
 	AccountId        string          `json:"account_id"`
 	Balance          decimal.Decimal `json:"balance"`

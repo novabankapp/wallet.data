@@ -11,12 +11,12 @@ import (
 	"github.com/shopspring/decimal"
 )
 
-func (a *WalletAggregate) CreateWallet(ctx context.Context, amount decimal.Decimal, description, userId, accountId, id string) error {
+func (a *WalletAggregate) CreateWallet(ctx context.Context, amount decimal.Decimal, description, userId, accountId, eventId string) error {
 	span, _ := opentracing.StartSpanFromContext(ctx, "WalletAggregate.CreateWallet")
 	defer span.Finish()
 	span.LogFields(log.String(constants.AggregateID, a.GetID()))
 
-	event, err := eventsV1.NewWalletCreatedEvent(a, amount, description, userId, accountId, id)
+	event, err := eventsV1.NewWalletCreatedEvent(a, amount, description, userId, accountId, eventId)
 	if err != nil {
 		tracing.TraceErr(span, err)
 		return errors.Wrap(err, "NewWalletCreatedEvent")
